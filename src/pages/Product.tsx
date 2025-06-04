@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ShoppingCart, Heart, User, Search, Star, Minus, Plus, MapPin, Truck } from 'lucide-react';
+import { ShoppingCart, Heart, User, Search, Star, Minus, Plus, MapPin, Truck, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from '@/hooks/use-toast';
 
 const Product = () => {
   const { id } = useParams();
@@ -15,6 +16,8 @@ const Product = () => {
   const [wishlistCount, setWishlistCount] = useState(0);
   const [pincode, setPincode] = useState('');
   const [deliveryInfo, setDeliveryInfo] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState('');
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   // Mock product data
   const product = {
@@ -42,6 +45,90 @@ const Product = () => {
 
   const [selectedImage, setSelectedImage] = useState(product.images[0]);
 
+  const getCurrentLocation = () => {
+    setIsLoadingLocation(true);
+    
+    if (!navigator.geolocation) {
+      toast({
+        title: "Geolocation not supported",
+        description: "Your browser doesn't support geolocation. Please enter your pincode manually.",
+        variant: "destructive"
+      });
+      setIsLoadingLocation(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        
+        try {
+          // Using a free reverse geocoding API
+          const response = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+          );
+          const data = await response.json();
+          
+          const address = `${data.locality}, ${data.principalSubdivision}, ${data.countryName}`;
+          const postalCode = data.postcode || '';
+          
+          setCurrentLocation(address);
+          setPincode(postalCode);
+          
+          // Automatically check delivery for the detected location
+          if (postalCode && postalCode.length === 6) {
+            setDeliveryInfo({
+              available: true,
+              estimatedDays: '3-5',
+              charge: postalCode.startsWith('1') ? 0 : 99
+            });
+          }
+          
+          toast({
+            title: "Location detected",
+            description: `Delivery location set to: ${address}`,
+          });
+        } catch (error) {
+          toast({
+            title: "Error getting address",
+            description: "Could not get your address details. Please enter your pincode manually.",
+            variant: "destructive"
+          });
+        }
+        
+        setIsLoadingLocation(false);
+      },
+      (error) => {
+        let errorMessage = "Could not get your location. Please enter your pincode manually.";
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Location access denied. Please enter your pincode manually.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Location information unavailable. Please enter your pincode manually.";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "Location request timed out. Please enter your pincode manually.";
+            break;
+        }
+        
+        toast({
+          title: "Location Error",
+          description: errorMessage,
+          variant: "destructive"
+        });
+        
+        setIsLoadingLocation(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000
+      }
+    );
+  };
+
   const checkDelivery = () => {
     if (pincode.length === 6) {
       setDeliveryInfo({
@@ -54,11 +141,18 @@ const Product = () => {
 
   const addToCart = () => {
     if (!selectedSize) {
-      alert('Please select a size');
+      toast({
+        title: "Size Required",
+        description: "Please select a size before adding to cart.",
+        variant: "destructive"
+      });
       return;
     }
     setCartCount(prev => prev + quantity);
-    alert('Item added to cart!');
+    toast({
+      title: "Added to Cart",
+      description: `${product.name} has been added to your cart.`,
+    });
   };
 
   // Mock related products
@@ -244,26 +338,47 @@ const Product = () => {
               </div>
             </div>
 
-            {/* Delivery Section */}
+            {/* Enhanced Delivery Section with Location Detection */}
             <div className="border rounded-lg p-4">
               <h3 className="font-semibold mb-3 flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
                 Delivery to your location
               </h3>
-              <div className="flex gap-2 mb-3">
-                <Input
-                  placeholder="Enter pincode"
-                  value={pincode}
-                  onChange={(e) => setPincode(e.target.value)}
-                  maxLength={6}
-                  className="flex-1"
-                />
-                <Button onClick={checkDelivery} variant="outline">
-                  Check
+              
+              {currentLocation && (
+                <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm font-medium text-green-800">Current Location:</p>
+                  <p className="text-sm text-green-700">{currentLocation}</p>
+                </div>
+              )}
+              
+              <div className="space-y-3">
+                <Button
+                  onClick={getCurrentLocation}
+                  disabled={isLoadingLocation}
+                  variant="outline"
+                  className="w-full flex items-center gap-2"
+                >
+                  <Navigation className="h-4 w-4" />
+                  {isLoadingLocation ? 'Getting your location...' : 'Use My Current Location'}
                 </Button>
+                
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Or enter pincode"
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value)}
+                    maxLength={6}
+                    className="flex-1"
+                  />
+                  <Button onClick={checkDelivery} variant="outline">
+                    Check
+                  </Button>
+                </div>
               </div>
+              
               {deliveryInfo && (
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-sm mt-3">
                   <div className="flex items-center gap-2 text-green-600">
                     <Truck className="h-4 w-4" />
                     <span>Delivery available in {deliveryInfo.estimatedDays} business days</span>
