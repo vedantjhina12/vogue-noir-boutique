@@ -1,10 +1,11 @@
-
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ShoppingCart, Heart, User, Search, Star, Minus, Plus } from 'lucide-react';
+import { ShoppingCart, Heart, User, Search, Star, Minus, Plus, MapPin, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Product = () => {
   const { id } = useParams();
@@ -12,6 +13,8 @@ const Product = () => {
   const [quantity, setQuantity] = useState(1);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [pincode, setPincode] = useState('');
+  const [deliveryInfo, setDeliveryInfo] = useState(null);
 
   // Mock product data
   const product = {
@@ -39,6 +42,26 @@ const Product = () => {
 
   const [selectedImage, setSelectedImage] = useState(product.images[0]);
 
+  const checkDelivery = () => {
+    if (pincode.length === 6) {
+      setDeliveryInfo({
+        available: true,
+        estimatedDays: '3-5',
+        charge: pincode.startsWith('1') ? 0 : 99
+      });
+    }
+  };
+
+  const addToCart = () => {
+    if (!selectedSize) {
+      alert('Please select a size');
+      return;
+    }
+    setCartCount(prev => prev + quantity);
+    alert('Item added to cart!');
+  };
+
+  // Mock related products
   const relatedProducts = [
     {
       id: 2,
@@ -89,14 +112,16 @@ const Product = () => {
                   </span>
                 )}
               </Button>
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
+              <Link to="/cart">
+                <Button variant="ghost" size="icon" className="relative">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
               </Button>
@@ -219,10 +244,41 @@ const Product = () => {
               </div>
             </div>
 
+            {/* Delivery Section */}
+            <div className="border rounded-lg p-4">
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                Delivery to your location
+              </h3>
+              <div className="flex gap-2 mb-3">
+                <Input
+                  placeholder="Enter pincode"
+                  value={pincode}
+                  onChange={(e) => setPincode(e.target.value)}
+                  maxLength={6}
+                  className="flex-1"
+                />
+                <Button onClick={checkDelivery} variant="outline">
+                  Check
+                </Button>
+              </div>
+              {deliveryInfo && (
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2 text-green-600">
+                    <Truck className="h-4 w-4" />
+                    <span>Delivery available in {deliveryInfo.estimatedDays} business days</span>
+                  </div>
+                  <div className="text-gray-600">
+                    Delivery charge: {deliveryInfo.charge === 0 ? 'FREE' : `₹${deliveryInfo.charge}`}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="space-y-3">
               <Button
                 className="w-full bg-black text-white hover:bg-gray-800 py-3"
-                onClick={() => setCartCount(prev => prev + quantity)}
+                onClick={addToCart}
               >
                 ADD TO CART
               </Button>
