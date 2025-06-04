@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Heart, User, Search, Filter } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import Header from '@/components/Header';
 
 const Men = () => {
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [cartItems, setCartItems] = useState([]);
+  const [wishlistItems, setWishlistItems] = useState([]);
 
   const menProducts = [
     {
@@ -53,52 +56,64 @@ const Men = () => {
     }
   ];
 
+  const handleUpdateCartQuantity = (id: number, quantity: number) => {
+    setCartItems(prev => prev.map(item => 
+      item.id === id ? { ...item, quantity } : item
+    ));
+  };
+
+  const handleRemoveCartItem = (id: number) => {
+    setCartItems(prev => prev.filter(item => item.id !== id));
+    setCartCount(prev => prev - 1);
+  };
+
+  const handleRemoveWishlistItem = (id: number) => {
+    setWishlistItems(prev => prev.filter(item => item.id !== id));
+    setWishlistCount(prev => prev - 1);
+  };
+
+  const handleMoveToCart = (id: number) => {
+    const wishlistItem = wishlistItems.find(item => item.id === id);
+    if (wishlistItem) {
+      const cartItem = {
+        ...wishlistItem,
+        quantity: 1,
+        size: 'M'
+      };
+      setCartItems(prev => [...prev, cartItem]);
+      setCartCount(prev => prev + 1);
+      handleRemoveWishlistItem(id);
+    }
+  };
+
+  const handleAddToWishlist = (product) => {
+    setWishlistItems(prev => [...prev, product]);
+    setWishlistCount(prev => prev + 1);
+  };
+
+  const handleAddToCart = (product) => {
+    const cartItem = {
+      ...product,
+      quantity: 1,
+      size: 'M'
+    };
+    setCartItems(prev => [...prev, cartItem]);
+    setCartCount(prev => prev + 1);
+  };
+
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200 sticky top-0 bg-white z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="text-2xl font-bold text-black">
-              YUTH
-            </Link>
-            <nav className="hidden md:flex space-x-8">
-              <Link to="/men" className="text-black hover:text-gray-600 font-medium border-b-2 border-black">
-                MEN
-              </Link>
-              <Link to="/women" className="text-gray-900 hover:text-gray-600 font-medium">
-                WOMEN
-              </Link>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
-                <Search className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="relative">
-                <Heart className="h-5 w-5" />
-                {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {wishlistCount}
-                  </span>
-                )}
-              </Button>
-              <Link to="/cart">
-                <Button variant="ghost" size="icon" className="relative">
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {cartCount}
-                    </span>
-                  )}
-                </Button>
-              </Link>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header
+        currentPage="men"
+        cartCount={cartCount}
+        wishlistCount={wishlistCount}
+        cartItems={cartItems}
+        wishlistItems={wishlistItems}
+        onUpdateCartQuantity={handleUpdateCartQuantity}
+        onRemoveCartItem={handleRemoveCartItem}
+        onRemoveWishlistItem={handleRemoveWishlistItem}
+        onMoveToCart={handleMoveToCart}
+      />
 
       {/* Hero Banner */}
       <section className="relative h-64 bg-gray-900 flex items-center justify-center">
@@ -143,7 +158,7 @@ const Men = () => {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            setWishlistCount(prev => prev + 1);
+                            handleAddToWishlist(product);
                           }}
                         >
                           <Heart className="h-4 w-4" />
@@ -155,7 +170,7 @@ const Men = () => {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            setCartCount(prev => prev + 1);
+                            handleAddToCart(product);
                           }}
                         >
                           <ShoppingCart className="h-4 w-4" />
