@@ -1,11 +1,18 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { User } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import SearchBar from './SearchBar';
 import CartSidebar from './CartSidebar';
 import WishlistSidebar from './WishlistSidebar';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface CartItem {
   id: number;
@@ -47,6 +54,14 @@ const Header = ({
   onRemoveWishlistItem,
   onMoveToCart
 }: HeaderProps) => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   return (
     <header className="border-b border-gray-200 sticky top-0 bg-white z-50">
       <div className="container mx-auto px-4 py-4">
@@ -87,11 +102,30 @@ const Header = ({
               onRemoveItem={onRemoveCartItem}
             />
             
-            <Link to="/login">
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
-            </Link>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem disabled>
+                    {user.email}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/login">
+                <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
