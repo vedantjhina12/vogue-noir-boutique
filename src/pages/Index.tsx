@@ -1,106 +1,88 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Heart, User, Search } from 'lucide-react';
+import { ShoppingCart, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import Header from '@/components/Header';
+import { useFeaturedProducts } from '@/hooks/useProducts';
+import { useCart } from '@/hooks/useCart';
+import { useWishlist } from '@/hooks/useWishlist';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
-  const [cartCount, setCartCount] = useState(0);
-  const [wishlistCount, setWishlistCount] = useState(0);
+  const { user } = useAuth();
+  const { data: featuredProducts, isLoading: productsLoading } = useFeaturedProducts();
+  const { cart, addToCart } = useCart();
+  const { wishlist, addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
-  const featuredProducts = [
-    {
-      id: 1,
-      name: "Classic White Shirt",
-      price: 2999,
-      image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=500&fit=crop",
-      category: "men"
-    },
-    {
-      id: 2,
-      name: "Black Dress",
-      price: 4999,
-      image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=500&fit=crop",
-      category: "women"
-    },
-    {
-      id: 3,
-      name: "Casual Blazer",
-      price: 6999,
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop",
-      category: "men"
-    },
-    {
-      id: 4,
-      name: "Elegant Blouse",
-      price: 3499,
-      image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=500&fit=crop",
-      category: "women"
+  const cartCount = cart?.reduce((total, item) => total + item.quantity, 0) || 0;
+  const wishlistCount = wishlist?.length || 0;
+
+  const handleAddToCart = async (productId: string) => {
+    if (!user) {
+      // Redirect to login if not authenticated
+      window.location.href = '/login';
+      return;
     }
-  ];
+
+    try {
+      await addToCart({
+        user_id: user.id,
+        product_id: productId,
+        quantity: 1,
+        size: 'M', // Default size
+        color: null
+      });
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
+  };
+
+  const handleToggleWishlist = async (productId: string) => {
+    if (!user) {
+      // Redirect to login if not authenticated
+      window.location.href = '/login';
+      return;
+    }
+
+    try {
+      if (isInWishlist(productId)) {
+        await removeFromWishlist(productId);
+      } else {
+        await addToWishlist(productId);
+      }
+    } catch (error) {
+      console.error('Error toggling wishlist:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200 sticky top-0 bg-white z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <Link to="/" className="text-2xl font-bold text-black">
-              YUTH
-            </Link>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              <Link to="/men" className="text-gray-900 hover:text-gray-600 font-medium">
-                MEN
-              </Link>
-              <Link to="/women" className="text-gray-900 hover:text-gray-600 font-medium">
-                WOMEN
-              </Link>
-            </nav>
-
-            {/* Right Icons */}
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
-                <Search className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="relative">
-                <Heart className="h-5 w-5" />
-                {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {wishlistCount}
-                  </span>
-                )}
-              </Button>
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className="md:hidden border-t border-gray-200">
-          <div className="flex justify-center space-x-8 py-4">
-            <Link to="/men" className="text-gray-900 hover:text-gray-600 font-medium">
-              MEN
-            </Link>
-            <Link to="/women" className="text-gray-900 hover:text-gray-600 font-medium">
-              WOMEN
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header 
+        currentPage="home"
+        cartCount={cartCount}
+        wishlistCount={wishlistCount}
+        cartItems={cart?.map(item => ({
+          id: parseInt(item.product_id),
+          name: item.products.name,
+          price: parseFloat(item.products.price.toString()),
+          image: item.products.image_url || '',
+          quantity: item.quantity,
+          size: item.size || 'M'
+        })) || []}
+        wishlistItems={wishlist?.map(item => ({
+          id: parseInt(item.product_id),
+          name: item.products.name,
+          price: parseFloat(item.products.price.toString()),
+          image: item.products.image_url || '',
+          category: item.products.categories?.name || 'Fashion'
+        })) || []}
+        onUpdateCartQuantity={() => {}}
+        onRemoveCartItem={() => {}}
+        onRemoveWishlistItem={() => {}}
+        onMoveToCart={() => {}}
+      />
 
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center bg-gray-100">
@@ -134,49 +116,61 @@ const Index = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">FEATURED</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <Card key={product.id} className="group cursor-pointer border-none shadow-none">
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute top-4 right-4 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        size="icon"
-                        variant="secondary"
-                        className="bg-white hover:bg-gray-100"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setWishlistCount(prev => prev + 1);
-                        }}
-                      >
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="secondary"
-                        className="bg-white hover:bg-gray-100"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCartCount(prev => prev + 1);
-                        }}
-                      >
-                        <ShoppingCart className="h-4 w-4" />
-                      </Button>
+          {productsLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-gray-300 h-80 w-full mb-4"></div>
+                  <div className="bg-gray-300 h-4 w-3/4 mb-2"></div>
+                  <div className="bg-gray-300 h-4 w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {featuredProducts?.slice(0, 4).map((product) => (
+                <Card key={product.id} className="group cursor-pointer border-none shadow-none">
+                  <CardContent className="p-0">
+                    <div className="relative overflow-hidden">
+                      <img
+                        src={product.image_url || "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=500&fit=crop"}
+                        alt={product.name}
+                        className="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute top-4 right-4 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          size="icon"
+                          variant="secondary"
+                          className="bg-white hover:bg-gray-100"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleWishlist(product.id);
+                          }}
+                        >
+                          <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-current text-red-500' : ''}`} />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="secondary"
+                          className="bg-white hover:bg-gray-100"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToCart(product.id);
+                          }}
+                        >
+                          <ShoppingCart className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="pt-4">
-                    <h3 className="font-medium text-gray-900">{product.name}</h3>
-                    <p className="text-gray-600">₹{product.price.toLocaleString()}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    <div className="pt-4">
+                      <h3 className="font-medium text-gray-900">{product.name}</h3>
+                      <p className="text-gray-600">₹{parseFloat(product.price.toString()).toLocaleString()}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -233,17 +227,15 @@ const Index = () => {
               <ul className="space-y-2 text-gray-400">
                 <li><Link to="/men" className="hover:text-white">Men's Collection</Link></li>
                 <li><Link to="/women" className="hover:text-white">Women's Collection</Link></li>
-                <li><Link to="/new-arrivals" className="hover:text-white">New Arrivals</Link></li>
-                <li><Link to="/sale" className="hover:text-white">Sale</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">CUSTOMER CARE</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><Link to="/contact" className="hover:text-white">Contact Us</Link></li>
-                <li><Link to="/shipping" className="hover:text-white">Shipping Info</Link></li>
-                <li><Link to="/returns" className="hover:text-white">Returns</Link></li>
-                <li><Link to="/size-guide" className="hover:text-white">Size Guide</Link></li>
+                <li><a href="#" className="hover:text-white">Contact Us</a></li>
+                <li><a href="#" className="hover:text-white">Shipping Info</a></li>
+                <li><a href="#" className="hover:text-white">Returns</a></li>
+                <li><a href="#" className="hover:text-white">Size Guide</a></li>
               </ul>
             </div>
             <div>
