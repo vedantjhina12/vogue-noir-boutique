@@ -2,6 +2,32 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+// Define the product type with categories included
+type ProductWithCategory = {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  sale_price: number | null;
+  image_url: string | null;
+  images: string[] | null;
+  brand: string | null;
+  sku: string | null;
+  stock_quantity: number;
+  sizes: string[] | null;
+  colors: string[] | null;
+  is_active: boolean;
+  is_featured: boolean;
+  category_id: string | null;
+  created_at: string;
+  updated_at: string;
+  categories: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
+};
+
 export const useFeaturedProducts = () => {
   return useQuery({
     queryKey: ['products', 'featured'],
@@ -20,7 +46,7 @@ export const useFeaturedProducts = () => {
         .eq('is_active', true);
 
       if (error) throw error;
-      return data;
+      return data as ProductWithCategory[];
     },
   });
 };
@@ -43,7 +69,7 @@ export const useProductsByCategory = (categorySlug: string) => {
         .eq('is_active', true);
 
       if (error) throw error;
-      return data;
+      return data as ProductWithCategory[];
     },
   });
 };
@@ -66,7 +92,7 @@ export const useProductById = (id: string) => {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as ProductWithCategory;
     },
   });
 };
