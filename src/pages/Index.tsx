@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Heart } from 'lucide-react';
@@ -28,7 +27,6 @@ const Index = () => {
 
     try {
       await addToCart({
-        user_id: user.id,
         product_id: productId,
         quantity: 1,
         size: 'M', // Default size
