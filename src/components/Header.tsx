@@ -83,18 +83,6 @@ const Header = ({
             >
               WOMEN
             </Link>
-            <Link 
-              to="/track-order" 
-              className="text-gray-900 hover:text-gray-600 font-medium"
-            >
-              TRACK ORDER
-            </Link>
-            <Link 
-              to="/address" 
-              className="text-gray-900 hover:text-gray-600 font-medium"
-            >
-              ADDRESS
-            </Link>
           </nav>
           
           <div className="flex items-center space-x-4">
