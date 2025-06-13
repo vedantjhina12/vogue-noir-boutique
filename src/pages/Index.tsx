@@ -231,6 +231,8 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">CUSTOMER CARE</h4>
               <ul className="space-y-2 text-gray-400">
+                <li><Link to="/track-order" className="hover:text-white">Track Order</Link></li>
+                <li><Link to="/address" className="hover:text-white">Manage Addresses</Link></li>
                 <li><a href="#" className="hover:text-white">Contact Us</a></li>
                 <li><a href="#" className="hover:text-white">Shipping Info</a></li>
                 <li><a href="#" className="hover:text-white">Returns</a></li>
