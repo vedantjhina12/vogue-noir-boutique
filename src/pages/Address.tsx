@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Plus, Edit, Trash2, Home, Building } from 'lucide-react';
@@ -121,7 +120,7 @@ const Address = () => {
           name: item.products.name,
           price: parseFloat(item.products.price.toString()),
           image: item.products.image_url || '',
-          category: item.products.categories?.name || 'Fashion'
+          category: 'Fashion'
         })) || []}
         onUpdateCartQuantity={() => {}}
         onRemoveCartItem={() => {}}
