@@ -183,8 +183,12 @@ const Product = () => {
       <header className="border-b border-gray-200 sticky top-0 bg-white z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="text-2xl font-bold text-black">
-              YUTH
+            <Link to="/" className="flex items-center">
+              <img
+                src="/lovable-uploads/cdb4e92d-af3d-4eeb-9abe-9eb6f8d1acbe.png"
+                alt="YUTH LIFESTYLE"
+                className="h-12 w-auto"
+              />
             </Link>
             <nav className="hidden md:flex space-x-8">
               <Link to="/men" className="text-gray-900 hover:text-gray-600 font-medium">
