@@ -32,6 +32,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Handle successful OAuth callback
+        if (event === 'SIGNED_IN' && session) {
+          console.log('User signed in successfully:', session.user);
+          // Redirect to home page after successful authentication
+          if (window.location.pathname === '/login') {
+            window.location.href = '/';
+          }
+        }
       }
     );
 
@@ -87,7 +96,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     console.log('Attempting Google sign in...');
     console.log('Current origin:', window.location.origin);
     
-    const redirectUrl = `${window.location.origin}/`;
+    // Use the current URL for redirect to ensure proper callback handling
+    const redirectUrl = window.location.origin;
     console.log('Redirect URL:', redirectUrl);
     
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -96,7 +106,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         redirectTo: redirectUrl,
         queryParams: {
           access_type: 'offline',
-          prompt: 'consent',
+          prompt: 'select_account',
         }
       }
     });
@@ -105,9 +115,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     if (error) {
       console.error('Google authentication error:', error);
+      return { error };
     }
     
-    return { error };
+    // The OAuth flow will redirect the user to Google and then back
+    // The auth state change listener will handle the callback
+    return { error: null };
   };
 
   const signInWithFacebook = async () => {
