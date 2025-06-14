@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, LogOut } from 'lucide-react';
@@ -69,7 +70,7 @@ const Header = ({
             <img
               src="/lovable-uploads/96794140-39df-4d8f-b881-41bf91a7e028.png"
               alt="YUTH Lifestyle"
-              className="h-16 w-auto"
+              className="h-12 w-auto"
             />
           </Link>
           
