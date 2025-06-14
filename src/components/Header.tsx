@@ -32,7 +32,7 @@ interface WishlistItem {
 }
 
 interface HeaderProps {
-  currentPage: 'men' | 'women' | 'home';
+  currentPage: 'men' | 'women' | 'home' | 'products';
   cartCount: number;
   wishlistCount: number;
   cartItems: CartItem[];
