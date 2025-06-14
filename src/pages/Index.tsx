@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Heart, User, Search, ChevronLeft, ChevronRight, Facebook, Instagram, X, Linkedin, Youtube } from 'lucide-react';
@@ -180,34 +181,44 @@ const Index = () => {
           <h2 className="text-3xl font-bold text-center mb-8">Featured Collections</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Men's Collection */}
-            <div className="relative overflow-hidden rounded-lg">
+            <div className="relative overflow-hidden rounded-lg group">
               <img
-                src="https://images.unsplash.com/photo-1523381294911-8cd694c82c4c?w=600&h=400&fit=crop"
+                src="https://images.unsplash.com/photo-1523381294911-8cd694c82c4c?w=600&h=500&fit=crop"
                 alt="Men's Collection"
-                className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-300"
+                className="w-full h-80 object-cover transform hover:scale-110 transition-transform duration-300"
               />
               <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-              <div className="absolute bottom-0 left-0 p-6 text-white">
-                <h3 className="text-xl font-semibold mb-2">Men's Collection</h3>
-                <Link to="/men">
-                  <Button variant="secondary">Shop Now</Button>
-                </Link>
+              <div className="absolute inset-0 flex flex-col justify-center items-center text-white p-6">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold mb-4">Men's Collection</h3>
+                  <p className="text-lg mb-6 opacity-90">Discover premium menswear crafted for the modern gentleman</p>
+                  <Link to="/men">
+                    <Button size="lg" variant="secondary" className="bg-white text-black hover:bg-gray-100">
+                      Shop Men's
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
 
             {/* Women's Collection */}
-            <div className="relative overflow-hidden rounded-lg">
+            <div className="relative overflow-hidden rounded-lg group">
               <img
-                src="https://images.unsplash.com/photo-1509967291958-493af72e1926?w=600&h=400&fit=crop"
+                src="https://images.unsplash.com/photo-1509967291958-493af72e1926?w=600&h=500&fit=crop"
                 alt="Women's Collection"
-                className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-300"
+                className="w-full h-80 object-cover transform hover:scale-110 transition-transform duration-300"
               />
               <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-              <div className="absolute bottom-0 left-0 p-6 text-white">
-                <h3 className="text-xl font-semibold mb-2">Women's Collection</h3>
-                <Link to="/women">
-                  <Button variant="secondary">Shop Now</Button>
-                </Link>
+              <div className="absolute inset-0 flex flex-col justify-center items-center text-white p-6">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold mb-4">Women's Collection</h3>
+                  <p className="text-lg mb-6 opacity-90">Elegant designs that celebrate feminine sophistication</p>
+                  <Link to="/women">
+                    <Button size="lg" variant="secondary" className="bg-white text-black hover:bg-gray-100">
+                      Shop Women's
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
