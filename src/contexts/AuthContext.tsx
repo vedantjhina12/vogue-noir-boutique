@@ -11,6 +11,10 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   signInWithGoogle: () => Promise<{ error: any }>;
   signInWithFacebook: () => Promise<{ error: any }>;
+  signUpWithPhone: (phone: string, fullName?: string) => Promise<{ error: any }>;
+  signInWithPhone: (phone: string) => Promise<{ error: any }>;
+  verifyOtp: (phone: string, token: string, type: 'sms' | 'signup') => Promise<{ error: any }>;
+  resendOtp: (phone: string, type: 'sms' | 'signup') => Promise<{ error: any }>;
   loading: boolean;
 }
 
@@ -100,6 +104,46 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return { error };
   };
 
+  const signUpWithPhone = async (phone: string, fullName?: string) => {
+    const { error } = await supabase.auth.signUp({
+      phone,
+      password: '', // Phone signup doesn't require password with OTP
+      options: {
+        data: {
+          full_name: fullName || ''
+        }
+      }
+    });
+    return { error };
+  };
+
+  const signInWithPhone = async (phone: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      phone,
+      options: {
+        channel: 'sms'
+      }
+    });
+    return { error };
+  };
+
+  const verifyOtp = async (phone: string, token: string, type: 'sms' | 'signup') => {
+    const { error } = await supabase.auth.verifyOtp({
+      phone,
+      token,
+      type
+    });
+    return { error };
+  };
+
+  const resendOtp = async (phone: string, type: 'sms' | 'signup') => {
+    if (type === 'signup') {
+      return await signUpWithPhone(phone);
+    } else {
+      return await signInWithPhone(phone);
+    }
+  };
+
   const value = {
     user,
     session,
@@ -108,6 +152,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     signOut,
     signInWithGoogle,
     signInWithFacebook,
+    signUpWithPhone,
+    signInWithPhone,
+    verifyOtp,
+    resendOtp,
     loading
   };
 

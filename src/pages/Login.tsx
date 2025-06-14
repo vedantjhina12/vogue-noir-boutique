@@ -18,6 +18,7 @@ const Login = () => {
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState('');
+  const [otpType, setOtpType] = useState<'sms' | 'signup'>('sms');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -26,7 +27,17 @@ const Login = () => {
     phone: ''
   });
 
-  const { user, signUp, signIn, signInWithGoogle, signInWithFacebook } = useAuth();
+  const { 
+    user, 
+    signUp, 
+    signIn, 
+    signInWithGoogle, 
+    signInWithFacebook,
+    signUpWithPhone,
+    signInWithPhone,
+    verifyOtp,
+    resendOtp
+  } = useAuth();
   const navigate = useNavigate();
 
   // Redirect authenticated users to home
@@ -100,16 +111,42 @@ const Login = () => {
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.phone) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid phone number",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Simulate sending OTP (in real implementation, this would call Supabase OTP function)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setShowOtp(true);
-      toast({
-        title: "OTP Sent",
-        description: `Verification code sent to ${formData.phone}`,
-      });
+      let error;
+      if (isSignUp) {
+        const result = await signUpWithPhone(formData.phone, formData.name);
+        error = result.error;
+        setOtpType('signup');
+      } else {
+        const result = await signInWithPhone(formData.phone);
+        error = result.error;
+        setOtpType('sms');
+      }
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        setShowOtp(true);
+        toast({
+          title: "OTP Sent",
+          description: `Verification code sent to ${formData.phone}`,
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -133,17 +170,51 @@ const Login = () => {
 
     setLoading(true);
     try {
-      // Simulate OTP verification (in real implementation, this would verify with Supabase)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast({
-        title: "Success!",
-        description: "Phone number verified successfully",
-      });
-      navigate('/');
+      const { error } = await verifyOtp(formData.phone, otp, otpType);
+      if (error) {
+        toast({
+          title: "Verification failed",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Success!",
+          description: "Phone number verified successfully",
+        });
+        navigate('/');
+      }
     } catch (error) {
       toast({
         title: "Verification failed",
         description: "Invalid verification code",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setLoading(true);
+    try {
+      const { error } = await resendOtp(formData.phone, otpType);
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "OTP Resent",
+          description: `New verification code sent to ${formData.phone}`,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to resend OTP",
         variant: "destructive"
       });
     } finally {
@@ -244,8 +315,9 @@ const Login = () => {
               <div className="text-center animate-fade-in delay-1400">
                 <button
                   type="button"
-                  onClick={() => handlePhoneSubmit(new Event('submit') as any)}
+                  onClick={handleResendOtp}
                   className="text-sm text-black hover:text-gray-800 font-medium transition-colors duration-200 hover:underline"
+                  disabled={loading}
                 >
                   Didn't receive code? Resend
                 </button>
@@ -481,9 +553,9 @@ const Login = () => {
                   <form onSubmit={handlePhoneSubmit} className="space-y-5">
                     {isSignUp && (
                       <div className="space-y-2 animate-fade-in delay-900">
-                        <Label htmlFor="name" className="text-sm font-medium">Full Name</Label>
+                        <Label htmlFor="phoneSignUpName" className="text-sm font-medium">Full Name</Label>
                         <Input
-                          id="name"
+                          id="phoneSignUpName"
                           name="name"
                           type="text"
                           placeholder="Enter your full name"
@@ -502,7 +574,7 @@ const Login = () => {
                           id="phone"
                           name="phone"
                           type="tel"
-                          placeholder="Enter your phone number"
+                          placeholder="Enter your phone number (e.g., +1234567890)"
                           value={formData.phone}
                           onChange={handleInputChange}
                           className="h-11 pl-10 border-2 focus:border-black transition-all duration-200 hover:shadow-md"
@@ -510,6 +582,9 @@ const Login = () => {
                         />
                         <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                       </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Please include country code (e.g., +1 for US, +44 for UK)
+                      </p>
                     </div>
 
                     <Button 
