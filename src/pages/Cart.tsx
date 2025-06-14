@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Heart, User, Search, Minus, Plus, Trash2, ArrowLeft } from 'lucide-react';
@@ -10,7 +11,7 @@ import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/hooks/useWishlist';
 
 const Cart = () => {
-  const { cart, updateCartItemQuantity, removeCartItem, clearCart } = useCart();
+  const { cart, updateCart, removeFromCart, clearCart } = useCart();
   const { wishlist } = useWishlist();
   const navigate = useNavigate();
 
@@ -23,18 +24,30 @@ const Cart = () => {
   const cartCount = cart?.reduce((total, item) => total + item.quantity, 0) || 0;
   const wishlistCount = wishlist?.length || 0;
 
-  const handleUpdateQuantity = (productId: string, newQuantity: number) => {
+  const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
     if (newQuantity > 0) {
-      updateCartItemQuantity(productId, newQuantity);
+      try {
+        await updateCart({ id: itemId, updates: { quantity: newQuantity } });
+      } catch (error) {
+        console.error('Error updating quantity:', error);
+      }
     }
   };
 
-  const handleRemoveItem = (productId: string) => {
-    removeCartItem(productId);
+  const handleRemoveItem = async (itemId: string) => {
+    try {
+      await removeFromCart(itemId);
+    } catch (error) {
+      console.error('Error removing item:', error);
+    }
   };
 
-  const handleClearCart = () => {
-    clearCart();
+  const handleClearCart = async () => {
+    try {
+      await clearCart();
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+    }
   };
 
   const calculateSubtotal = () => {
@@ -66,8 +79,18 @@ const Cart = () => {
           image: item.products.image_url || '',
           category: 'Fashion'
         })) || []}
-        onUpdateCartQuantity={handleUpdateQuantity}
-        onRemoveCartItem={handleRemoveItem}
+        onUpdateCartQuantity={(id: number, quantity: number) => {
+          const cartItem = cart?.find(item => parseInt(item.product_id) === id);
+          if (cartItem) {
+            handleUpdateQuantity(cartItem.id, quantity);
+          }
+        }}
+        onRemoveCartItem={(id: number) => {
+          const cartItem = cart?.find(item => parseInt(item.product_id) === id);
+          if (cartItem) {
+            handleRemoveItem(cartItem.id);
+          }
+        }}
         onRemoveWishlistItem={() => {}}
         onMoveToCart={() => {}}
       />
@@ -98,7 +121,7 @@ const Cart = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
               {cart?.map((item) => (
-                <Card key={item.product_id} className="mb-4">
+                <Card key={item.id} className="mb-4">
                   <CardContent className="flex items-center gap-4">
                     <div className="w-24 h-24 overflow-hidden rounded-md">
                       <img
@@ -118,7 +141,7 @@ const Cart = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleUpdateQuantity(item.product_id, item.quantity - 1)}
+                        onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                         disabled={item.quantity <= 1}
                       >
                         <Minus className="h-4 w-4" />
@@ -130,7 +153,7 @@ const Cart = () => {
                         onChange={(e) => {
                           const newQuantity = parseInt(e.target.value);
                           if (!isNaN(newQuantity)) {
-                            handleUpdateQuantity(item.product_id, newQuantity);
+                            handleUpdateQuantity(item.id, newQuantity);
                           }
                         }}
                         className="w-16 text-center"
@@ -138,7 +161,7 @@ const Cart = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleUpdateQuantity(item.product_id, item.quantity + 1)}
+                        onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -146,7 +169,7 @@ const Cart = () => {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => handleRemoveItem(item.product_id)}
+                      onClick={() => handleRemoveItem(item.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
