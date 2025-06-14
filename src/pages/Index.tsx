@@ -93,7 +93,11 @@ const Index = () => {
           <div className="absolute inset-0 bg-black bg-opacity-30"></div>
         </div>
         <div className="relative z-10 text-center text-white">
-          <h1 className="text-5xl md:text-7xl font-bold mb-4">YUTH</h1>
+          <img
+            src="/lovable-uploads/20991b50-1ea6-4b08-a84c-a9decc7a76e8.png"
+            alt="YUTH Logo"
+            className="h-32 w-auto mx-auto mb-4"
+          />
           <p className="text-xl md:text-2xl mb-8">Redefining Fashion</p>
           <div className="space-x-4">
             <Link to="/men">
@@ -215,7 +219,11 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-2xl font-bold mb-4">YUTH</h3>
+              <img
+                src="/lovable-uploads/20991b50-1ea6-4b08-a84c-a9decc7a76e8.png"
+                alt="YUTH Logo"
+                className="h-8 w-auto mb-4"
+              />
               <p className="text-gray-400">
                 Redefining fashion with contemporary designs and timeless elegance.
               </p>

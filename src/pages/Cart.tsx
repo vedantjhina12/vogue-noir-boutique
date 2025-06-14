@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Heart, User, Search, Minus, Plus, Trash2, ArrowLeft } from 'lucide-react';
@@ -230,7 +229,11 @@ const Cart = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-2xl font-bold mb-4">YUTH</h3>
+              <img
+                src="/lovable-uploads/20991b50-1ea6-4b08-a84c-a9decc7a76e8.png"
+                alt="YUTH Logo"
+                className="h-8 w-auto mb-4"
+              />
               <p className="text-gray-400">
                 Redefining fashion with contemporary designs and timeless elegance.
               </p>
