@@ -1,222 +1,184 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Heart, User, Search, Minus, Plus, Trash2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import Header from '@/components/Header';
+import { useCart } from '@/hooks/useCart';
+import { useWishlist } from '@/hooks/useWishlist';
 
 const Cart = () => {
-  const [wishlistCount, setWishlistCount] = useState(0);
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Classic White Shirt",
-      price: 2999,
-      image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300&h=400&fit=crop",
-      size: "M",
-      quantity: 2
-    },
-    {
-      id: 2,
-      name: "Black Dress",
-      price: 4999,
-      image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=300&h=400&fit=crop",
-      size: "S",
-      quantity: 1
-    }
-  ]);
+  const { cart, updateCartItemQuantity, removeCartItem, clearCart } = useCart();
+  const { wishlist } = useWishlist();
+  const navigate = useNavigate();
 
-  const [promoCode, setPromoCode] = useState('');
+  const [isCartEmpty, setIsCartEmpty] = useState(true);
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity === 0) {
-      removeItem(id);
-      return;
+  useEffect(() => {
+    setIsCartEmpty(!cart || cart.length === 0);
+  }, [cart]);
+
+  const cartCount = cart?.reduce((total, item) => total + item.quantity, 0) || 0;
+  const wishlistCount = wishlist?.length || 0;
+
+  const handleUpdateQuantity = (productId: string, newQuantity: number) => {
+    if (newQuantity > 0) {
+      updateCartItemQuantity(productId, newQuantity);
     }
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
   };
 
-  const removeItem = (id) => {
-    setCartItems(items => items.filter(item => item.id !== id));
+  const handleRemoveItem = (productId: string) => {
+    removeCartItem(productId);
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = subtotal > 2999 ? 0 : 199;
-  const discount = promoCode === 'YUTH10' ? subtotal * 0.1 : 0;
-  const total = subtotal + shipping - discount;
+  const handleClearCart = () => {
+    clearCart();
+  };
+
+  const calculateSubtotal = () => {
+    return cart?.reduce((total, item) => total + (item.products.price * item.quantity), 0) || 0;
+  };
+
+  const subtotal = calculateSubtotal();
+  const shippingCost = subtotal > 0 ? 50 : 0;
+  const total = subtotal + shippingCost;
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200 sticky top-0 bg-white z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="text-2xl font-bold text-black">
-              YUTH
-            </Link>
-            <nav className="hidden md:flex space-x-8">
-              <Link to="/men" className="text-gray-900 hover:text-gray-600 font-medium">
-                MEN
-              </Link>
-              <Link to="/women" className="text-gray-900 hover:text-gray-600 font-medium">
-                WOMEN
-              </Link>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
-                <Search className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="relative">
-                <Heart className="h-5 w-5" />
-                {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {wishlistCount}
-                  </span>
-                )}
-              </Button>
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartItems.length}
-                </span>
-              </Button>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gray-50">
+      <Header 
+        currentPage="home"
+        cartCount={cartCount}
+        wishlistCount={wishlistCount}
+        cartItems={cart?.map(item => ({
+          id: parseInt(item.product_id),
+          name: item.products.name,
+          price: parseFloat(item.products.price.toString()),
+          image: item.products.image_url || '',
+          quantity: item.quantity,
+          size: item.size || 'M'
+        })) || []}
+        wishlistItems={wishlist?.map(item => ({
+          id: parseInt(item.product_id),
+          name: item.products.name,
+          price: parseFloat(item.products.price.toString()),
+          image: item.products.image_url || '',
+          category: 'Fashion'
+        })) || []}
+        onUpdateCartQuantity={handleUpdateQuantity}
+        onRemoveCartItem={handleRemoveItem}
+        onRemoveWishlistItem={() => {}}
+        onMoveToCart={() => {}}
+      />
 
       <div className="container mx-auto px-4 py-8">
-        {/* Back to shopping */}
-        <Link to="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-black mb-6">
-          <ArrowLeft className="h-4 w-4" />
-          Continue Shopping
-        </Link>
+        <div className="flex items-center gap-4 mb-8">
+          <Link to="/">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-bold">Shopping Cart</h1>
+        </div>
 
-        <h1 className="text-3xl font-bold mb-8">Shopping Cart ({cartItems.length} items)</h1>
-
-        {cartItems.length === 0 ? (
-          <div className="text-center py-16">
-            <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-            <h2 className="text-xl font-semibold text-gray-600 mb-2">Your cart is empty</h2>
-            <p className="text-gray-500 mb-6">Add some items to get started</p>
-            <Link to="/">
-              <Button className="bg-black text-white hover:bg-gray-800">
-                Start Shopping
+        {isCartEmpty ? (
+          <Card className="text-center">
+            <CardHeader>
+              <CardTitle>Your cart is empty</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>Looks like you haven't added anything to your cart yet.</p>
+              <Button asChild className="mt-4">
+                <Link to="/">Continue Shopping</Link>
               </Button>
-            </Link>
-          </div>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Cart Items */}
-            <div className="lg:col-span-2 space-y-4">
-              {cartItems.map((item) => (
-                <Card key={item.id} className="border border-gray-200">
-                  <CardContent className="p-6">
-                    <div className="flex gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-2">
+              {cart?.map((item) => (
+                <Card key={item.product_id} className="mb-4">
+                  <CardContent className="flex items-center gap-4">
+                    <div className="w-24 h-24 overflow-hidden rounded-md">
                       <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-24 h-32 object-cover rounded"
+                        src={item.products.image_url}
+                        alt={item.products.name}
+                        className="w-full h-full object-cover"
                       />
-                      <div className="flex-1 space-y-2">
-                        <h3 className="font-semibold text-lg">{item.name}</h3>
-                        <p className="text-gray-600">Size: {item.size}</p>
-                        <p className="text-lg font-semibold">₹{item.price.toLocaleString()}</p>
-                        
-                        <div className="flex items-center justify-between mt-4">
-                          <div className="flex items-center gap-3">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            >
-                              <Minus className="h-4 w-4" />
-                            </Button>
-                            <span className="w-8 text-center">{item.quantity}</span>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeItem(item.id)}
-                            className="text-red-500 hover:text-red-600"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
                     </div>
+                    <div className="flex-1">
+                      <Link to={`/product/${item.product_id}`} className="text-lg font-semibold hover:underline">
+                        {item.products.name}
+                      </Link>
+                      <p className="text-gray-500">Size: {item.size}</p>
+                      <p className="text-gray-900">₹{item.products.price.toLocaleString()}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleUpdateQuantity(item.product_id, item.quantity - 1)}
+                        disabled={item.quantity <= 1}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={item.quantity}
+                        onChange={(e) => {
+                          const newQuantity = parseInt(e.target.value);
+                          if (!isNaN(newQuantity)) {
+                            handleUpdateQuantity(item.product_id, newQuantity);
+                          }
+                        }}
+                        className="w-16 text-center"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleUpdateQuantity(item.product_id, item.quantity + 1)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleRemoveItem(item.product_id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </CardContent>
                 </Card>
               ))}
             </div>
 
-            {/* Order Summary */}
-            <div className="lg:col-span-1">
-              <Card className="border border-gray-200 sticky top-24">
-                <CardContent className="p-6">
-                  <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-                  
-                  <div className="space-y-3 mb-6">
-                    <div className="flex justify-between">
-                      <span>Subtotal</span>
-                      <span>₹{subtotal.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Shipping</span>
-                      <span>{shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
-                    </div>
-                    {discount > 0 && (
-                      <div className="flex justify-between text-green-600">
-                        <span>Discount</span>
-                        <span>-₹{discount.toLocaleString()}</span>
-                      </div>
-                    )}
-                    <hr />
-                    <div className="flex justify-between font-semibold text-lg">
-                      <span>Total</span>
-                      <span>₹{total.toLocaleString()}</span>
-                    </div>
+            <div>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Order Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between">
+                    <p className="text-gray-500">Subtotal:</p>
+                    <p className="text-gray-900">₹{subtotal.toLocaleString()}</p>
                   </div>
-
-                  <div className="mb-6">
-                    <label className="block text-sm font-medium mb-2">Promo Code</label>
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="Enter code"
-                        value={promoCode}
-                        onChange={(e) => setPromoCode(e.target.value)}
-                      />
-                      <Button variant="outline">Apply</Button>
-                    </div>
-                    {promoCode === 'YUTH10' && (
-                      <p className="text-green-600 text-sm mt-1">10% discount applied!</p>
-                    )}
+                  <div className="flex justify-between">
+                    <p className="text-gray-500">Shipping:</p>
+                    <p className="text-gray-900">₹{shippingCost.toLocaleString()}</p>
                   </div>
-
-                  <Button className="w-full bg-black text-white hover:bg-gray-800 py-3">
-                    PROCEED TO CHECKOUT
+                  <div className="flex justify-between font-semibold">
+                    <p>Total:</p>
+                    <p>₹{total.toLocaleString()}</p>
+                  </div>
+                  <Button className="w-full">
+                    Checkout
                   </Button>
-
-                  <div className="mt-4 text-sm text-gray-600 text-center">
-                    {shipping > 0 && (
-                      <p>Add ₹{(3000 - subtotal).toLocaleString()} more for FREE shipping</p>
-                    )}
-                  </div>
+                  <Button variant="outline" className="w-full" onClick={handleClearCart}>
+                    Clear Cart
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -225,12 +187,12 @@ const Cart = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-black text-white py-16 mt-16">
+      <footer className="bg-black text-white py-16">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <img
-                src="/lovable-uploads/20991b50-1ea6-4b08-a84c-a9decc7a76e8.png"
+                src="/lovable-uploads/9c01f148-7302-43d4-9c4f-db12d7ca4ec3.png"
                 alt="YUTH Logo"
                 className="h-8 w-auto mb-4"
               />

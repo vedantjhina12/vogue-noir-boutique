@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Filter, Heart, ShoppingCart } from 'lucide-react';
@@ -196,7 +197,7 @@ const Women = () => {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <img
-                src="/lovable-uploads/20991b50-1ea6-4b08-a84c-a9decc7a76e8.png"
+                src="/lovable-uploads/9c01f148-7302-43d4-9c4f-db12d7ca4ec3.png"
                 alt="YUTH Logo"
                 className="h-8 w-auto mb-4"
               />
