@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -94,33 +95,54 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithGoogle = async () => {
     console.log('Attempting Google sign in...');
-    console.log('Current origin:', window.location.origin);
     
-    // Use the current URL for redirect to ensure proper callback handling
-    const redirectUrl = window.location.origin;
-    console.log('Redirect URL:', redirectUrl);
-    
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: redirectUrl,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'select_account',
+    try {
+      // Check if we're in production or development
+      const isProduction = window.location.hostname !== 'localhost' && !window.location.hostname.includes('local');
+      const redirectUrl = isProduction ? window.location.origin : `${window.location.origin}/`;
+      
+      console.log('Environment:', isProduction ? 'production' : 'development');
+      console.log('Redirect URL:', redirectUrl);
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'select_account',
+          }
         }
+      });
+      
+      console.log('Google auth response:', { data, error });
+      
+      if (error) {
+        console.error('Google authentication error details:', {
+          message: error.message,
+          status: error.status,
+          statusText: error.name,
+          details: error
+        });
+        
+        // Provide more specific error messages
+        if (error.message.includes('provider is not enabled')) {
+          return { 
+            error: { 
+              ...error, 
+              message: 'Google authentication is not enabled. Please check your Supabase configuration.' 
+            } 
+          };
+        }
+        
+        return { error };
       }
-    });
-    
-    console.log('Google auth response:', { data, error });
-    
-    if (error) {
-      console.error('Google authentication error:', error);
-      return { error };
+      
+      return { error: null };
+    } catch (err) {
+      console.error('Unexpected error during Google auth:', err);
+      return { error: { message: 'An unexpected error occurred during authentication.' } };
     }
-    
-    // The OAuth flow will redirect the user to Google and then back
-    // The auth state change listener will handle the callback
-    return { error: null };
   };
 
   const signInWithFacebook = async () => {
