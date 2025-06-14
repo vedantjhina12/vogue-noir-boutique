@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -97,5 +98,189 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Fade animations */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in.delay-200 {
+    animation-delay: 0.2s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-300 {
+    animation-delay: 0.3s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-400 {
+    animation-delay: 0.4s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-500 {
+    animation-delay: 0.5s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-600 {
+    animation-delay: 0.6s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-700 {
+    animation-delay: 0.7s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-800 {
+    animation-delay: 0.8s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-900 {
+    animation-delay: 0.9s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-1000 {
+    animation-delay: 1.0s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-1100 {
+    animation-delay: 1.1s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-1200 {
+    animation-delay: 1.2s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-1300 {
+    animation-delay: 1.3s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-1400 {
+    animation-delay: 1.4s;
+    opacity: 0;
+  }
+
+  .animate-fade-in.delay-1500 {
+    animation-delay: 1.5s;
+    opacity: 0;
+  }
+
+  /* Slide animations */
+  .animate-slide-in-up {
+    animation: slideInUp 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.4s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.4s ease-out forwards;
+  }
+
+  /* Scale animations */
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  .animate-scale-in.delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  /* Bounce animation */
+  .animate-bounce-in {
+    animation: bounceIn 0.6s ease-out forwards;
+    transform: scale(0.3);
+    opacity: 0;
+  }
+
+  .animate-bounce-in.delay-1000 {
+    animation-delay: 1.0s;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
