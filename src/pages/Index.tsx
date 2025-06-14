@@ -328,26 +328,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Newsletter */}
-      <section className="bg-black py-24">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Subscribe to Our Newsletter</h2>
-          <p className="text-gray-400 mb-8">
-            Stay up to date with the latest collections, exclusive offers, and fashion tips.
-          </p>
-          <div className="max-w-md mx-auto flex">
-            <Input
-              type="email"
-              placeholder="Enter your email address"
-              className="rounded-r-none"
-            />
-            <Button className="rounded-l-none bg-white text-black hover:bg-gray-100">
-              Subscribe
-            </Button>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="bg-black text-white py-16">
         <div className="container mx-auto px-4">
