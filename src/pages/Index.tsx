@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Heart, User, Search, ChevronLeft, ChevronRight, Facebook, Instagram, Twitter, Linkedin, Youtube } from 'lucide-react';
+import { ShoppingCart, Heart, User, Search, ChevronLeft, ChevronRight, Facebook, Instagram, X, Linkedin, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -368,7 +369,7 @@ const Index = () => {
             </div>
             <div>
               <h4 className="font-semibold mb-4">CONNECT</h4>
-              <div className="flex flex-col space-y-4">
+              <div className="flex space-x-4">
                 <a href="#" className="text-gray-400 hover:text-white transition-colors" title="Instagram">
                   <Instagram className="h-6 w-6" />
                 </a>
@@ -376,7 +377,7 @@ const Index = () => {
                   <Facebook className="h-6 w-6" />
                 </a>
                 <a href="#" className="text-gray-400 hover:text-white transition-colors" title="X (formerly Twitter)">
-                  <Twitter className="h-6 w-6" />
+                  <X className="h-6 w-6" />
                 </a>
                 <a href="#" className="text-gray-400 hover:text-white transition-colors" title="LinkedIn">
                   <Linkedin className="h-6 w-6" />
