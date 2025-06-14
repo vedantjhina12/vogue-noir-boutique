@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Package, Truck, CheckCircle, Clock } from 'lucide-react';
@@ -138,6 +137,60 @@ const TrackOrder = () => {
           )}
         </div>
       </div>
+
+      <footer className="bg-black text-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <img
+                src="/lovable-uploads/ea619b45-2fbd-40ae-bb64-4b2d22f49b05.png"
+                alt="Company Logo"
+                className="h-8 w-auto mb-4"
+              />
+              <p className="text-gray-400">
+                Redefining fashion with contemporary designs and timeless elegance.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">SHOP</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link to="/men" className="hover:text-white">Men's Collection</Link></li>
+                <li><Link to="/women" className="hover:text-white">Women's Collection</Link></li>
+                <li><Link to="/new-arrivals" className="hover:text-white">New Arrivals</Link></li>
+                <li><Link to="/sale" className="hover:text-white">Sale</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">CUSTOMER CARE</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link to="/contact" className="hover:text-white">Contact Us</Link></li>
+                <li><Link to="/shipping" className="hover:text-white">Shipping Info</Link></li>
+                <li><Link to="/returns" className="hover:text-white">Returns</Link></li>
+                <li><Link to="/size-guide" className="hover:text-white">Size Guide</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">CONNECT</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="#" className="hover:text-white">Instagram</a></li>
+                <li><a href="#" className="hover:text-white">Facebook</a></li>
+                <li><a href="#" className="hover:text-white">Twitter</a></li>
+                <li><a href="#" className="hover:text-white">Newsletter</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 mt-12 pt-8 flex items-center justify-center">
+            <div className="flex items-center gap-4 text-gray-400">
+              <img
+                src="/lovable-uploads/ea619b45-2fbd-40ae-bb64-4b2d22f49b05.png"
+                alt="Footer Logo"
+                className="h-6 w-auto"
+              />
+              <p>&copy; 2024 Company Name. All rights reserved.</p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

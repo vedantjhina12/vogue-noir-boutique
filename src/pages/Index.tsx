@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Heart, User, Search, ChevronLeft, ChevronRight, Facebook, Instagram, X, Linkedin, Youtube } from 'lucide-react';
@@ -341,8 +340,8 @@ const Index = () => {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <img
-                src="/lovable-uploads/9c01f148-7302-43d4-9c4f-db12d7ca4ec3.png"
-                alt="YUTH Logo"
+                src="/lovable-uploads/ea619b45-2fbd-40ae-bb64-4b2d22f49b05.png"
+                alt="Company Logo"
                 className="h-8 w-auto mb-4"
               />
               <p className="text-gray-400">
@@ -391,7 +390,7 @@ const Index = () => {
           <div className="border-t border-gray-800 mt-12 pt-8 flex items-center justify-center">
             <div className="flex items-center gap-4 text-gray-400">
               <img
-                src="/lovable-uploads/be5b42cd-f184-4006-8428-37d5c0d1546b.png"
+                src="/lovable-uploads/ea619b45-2fbd-40ae-bb64-4b2d22f49b05.png"
                 alt="Footer Logo"
                 className="h-6 w-auto"
               />
