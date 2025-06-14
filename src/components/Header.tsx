@@ -71,7 +71,7 @@ const Header = ({
             <img
               src="/lovable-uploads/c05630d0-9221-430b-a391-0ec36f8c02d0.png"
               alt="YUTH Lifestyle"
-              className="h-12 w-auto"
+              className="h-16 w-auto"
             />
           </Link>
           
