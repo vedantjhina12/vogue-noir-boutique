@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Heart, User, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Heart, User, Search, ChevronLeft, ChevronRight, Facebook, Instagram, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -369,12 +369,20 @@ const Index = () => {
             </div>
             <div>
               <h4 className="font-semibold mb-4">CONNECT</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Instagram</a></li>
-                <li><a href="#" className="hover:text-white">Facebook</a></li>
-                <li><a href="#" className="hover:text-white">Twitter</a></li>
-                <li><a href="#" className="hover:text-white">Newsletter</a></li>
-              </ul>
+              <div className="flex space-x-4">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <Instagram className="h-6 w-6" />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <Facebook className="h-6 w-6" />
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <Twitter className="h-6 w-6" />
+                </a>
+              </div>
+              <div className="mt-4">
+                <Link to="/newsletter" className="text-gray-400 hover:text-white">Newsletter</Link>
+              </div>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-12 pt-8 flex items-center justify-center">
