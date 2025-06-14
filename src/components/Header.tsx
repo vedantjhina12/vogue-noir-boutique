@@ -63,7 +63,7 @@ const Header = ({
   };
 
   return (
-    <header className="border-b border-gray-200 sticky top-0 bg-white z-50">
+    <header className="border-b border-gray-200 sticky top-0 bg-transparent hover:bg-white transition-colors duration-300 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-black">
