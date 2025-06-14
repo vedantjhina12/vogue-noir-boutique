@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -85,12 +84,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
+    console.log('Attempting Google sign in...');
+    console.log('Current origin:', window.location.origin);
+    
+    const redirectUrl = `${window.location.origin}/`;
+    console.log('Redirect URL:', redirectUrl);
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/`
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
       }
     });
+    
+    console.log('Google auth response:', { data, error });
+    
+    if (error) {
+      console.error('Google authentication error:', error);
+    }
+    
     return { error };
   };
 
