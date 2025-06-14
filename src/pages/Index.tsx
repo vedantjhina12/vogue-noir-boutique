@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Heart, User, Search } from 'lucide-react';
+import { ShoppingCart, Heart, User, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -39,6 +38,18 @@ const Index = () => {
 
     return () => clearInterval(interval);
   }, [backgroundImages.length]);
+
+  const goToPrevious = () => {
+    setCurrentImageIndex((prevIndex) => 
+      prevIndex === 0 ? backgroundImages.length - 1 : prevIndex - 1
+    );
+  };
+
+  const goToNext = () => {
+    setCurrentImageIndex((prevIndex) => 
+      (prevIndex + 1) % backgroundImages.length
+    );
+  };
 
   const handleUpdateCartQuantity = (id: number, quantity: number) => {
     setCartItems(prev => prev.map(item => 
@@ -119,6 +130,21 @@ const Index = () => {
           ))}
           <div className="absolute inset-0 bg-black bg-opacity-30"></div>
         </div>
+
+        {/* Navigation Arrows */}
+        <button
+          onClick={goToPrevious}
+          className="absolute left-8 top-1/2 -translate-y-1/2 z-20 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all duration-300"
+        >
+          <ChevronLeft size={24} />
+        </button>
+
+        <button
+          onClick={goToNext}
+          className="absolute right-8 top-1/2 -translate-y-1/2 z-20 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all duration-300"
+        >
+          <ChevronRight size={24} />
+        </button>
 
         <div className="relative z-10 text-center text-white">
           <img
