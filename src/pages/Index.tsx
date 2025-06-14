@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Heart, User, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import Header from '@/components/Header';
 
 const Index = () => {
@@ -11,6 +19,26 @@ const Index = () => {
   const [wishlistCount, setWishlistCount] = useState(0);
   const [cartItems, setCartItems] = useState([]);
   const [wishlistItems, setWishlistItems] = useState([]);
+
+  // Background images for the slider
+  const backgroundImages = [
+    "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&h=1080&fit=crop",
+    "https://images.unsplash.com/photo-1523381294911-8cd694c82c4c?w=1920&h=1080&fit=crop",
+    "https://images.unsplash.com/photo-1509967291958-493af72e1926?w=1920&h=1080&fit=crop",
+    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1920&h=1080&fit=crop"
+  ];
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        (prevIndex + 1) % backgroundImages.length
+      );
+    }, 5000); // Change image every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [backgroundImages.length]);
 
   const handleUpdateCartQuantity = (id: number, quantity: number) => {
     setCartItems(prev => prev.map(item => 
@@ -71,16 +99,27 @@ const Index = () => {
         onMoveToCart={handleMoveToCart}
       />
 
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center">
+      {/* Hero Section with Background Slider */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image Slider */}
         <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&h=1080&fit=crop"
-            alt="Fashion Hero"
-            className="w-full h-full object-cover"
-          />
+          {backgroundImages.map((image, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <img
+                src={image}
+                alt={`Background ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
           <div className="absolute inset-0 bg-black bg-opacity-30"></div>
         </div>
+
         <div className="relative z-10 text-center text-white">
           <img
             src="/lovable-uploads/9c01f148-7302-43d4-9c4f-db12d7ca4ec3.png"
@@ -95,7 +134,7 @@ const Index = () => {
               </Button>
             </Link>
             <Link to="/women">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-black">
+              <Button size="lg" className="bg-white text-black hover:bg-gray-100">
                 SHOP WOMEN
               </Button>
             </Link>
@@ -103,11 +142,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Collections */}
+      {/* Featured Collections - Only Men's and Women's */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">Featured Collections</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Men's Collection */}
             <div className="relative overflow-hidden rounded-lg">
               <img
@@ -135,22 +174,6 @@ const Index = () => {
               <div className="absolute bottom-0 left-0 p-6 text-white">
                 <h3 className="text-xl font-semibold mb-2">Women's Collection</h3>
                 <Link to="/women">
-                  <Button variant="secondary">Shop Now</Button>
-                </Link>
-              </div>
-            </div>
-
-            {/* Accessories */}
-            <div className="relative overflow-hidden rounded-lg">
-              <img
-                src="https://images.unsplash.com/photo-1550358860-894879b9113f?w=600&h=400&fit=crop"
-                alt="Accessories"
-                className="w-full h-64 object-cover transform hover:scale-110 transition-transform duration-300"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-              <div className="absolute bottom-0 left-0 p-6 text-white">
-                <h3 className="text-xl font-semibold mb-2">Accessories</h3>
-                <Link to="/accessories">
                   <Button variant="secondary">Shop Now</Button>
                 </Link>
               </div>
