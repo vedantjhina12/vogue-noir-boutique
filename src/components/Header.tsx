@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, LogOut } from 'lucide-react';
@@ -69,7 +67,7 @@ const Header = ({
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center">
             <img
-              src="/lovable-uploads/c05630d0-9221-430b-a391-0ec36f8c02d0.png"
+              src="/lovable-uploads/96794140-39df-4d8f-b881-41bf91a7e028.png"
               alt="YUTH Lifestyle"
               className="h-16 w-auto"
             />
