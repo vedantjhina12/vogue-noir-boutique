@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Filter, Heart, ShoppingCart } from 'lucide-react';
@@ -232,8 +233,15 @@ const Men = () => {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 YUTH. All rights reserved.</p>
+          <div className="border-t border-gray-800 mt-12 pt-8 flex items-center justify-center">
+            <div className="flex items-center gap-4 text-gray-400">
+              <img
+                src="/lovable-uploads/be5b42cd-f184-4006-8428-37d5c0d1546b.png"
+                alt="Footer Logo"
+                className="h-6 w-auto"
+              />
+              <p>&copy; 2024 YUTH. All rights reserved.</p>
+            </div>
           </div>
         </div>
       </footer>
