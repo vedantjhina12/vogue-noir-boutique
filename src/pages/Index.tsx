@@ -370,7 +370,12 @@ const Index = () => {
               </ul>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 flex items-center justify-center gap-4">
+            <img
+              src="/lovable-uploads/be5b42cd-f184-4006-8428-37d5c0d1546b.png"
+              alt="Footer Logo"
+              className="h-6 w-auto"
+            />
             <p>&copy; 2024 YUTH. All rights reserved.</p>
           </div>
         </div>
