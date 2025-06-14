@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Heart, User, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,6 +14,7 @@ import {
 import Header from '@/components/Header';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [cartItems, setCartItems] = useState([]);
@@ -49,6 +50,10 @@ const Index = () => {
     setCurrentImageIndex((prevIndex) => 
       (prevIndex + 1) % backgroundImages.length
     );
+  };
+
+  const handleBackgroundImageClick = () => {
+    navigate('/products');
   };
 
   const handleUpdateCartQuantity = (id: number, quantity: number) => {
@@ -117,9 +122,10 @@ const Index = () => {
           {backgroundImages.map((image, index) => (
             <div
               key={index}
-              className={`absolute inset-0 transition-opacity duration-1000 ${
+              className={`absolute inset-0 transition-opacity duration-1000 cursor-pointer ${
                 index === currentImageIndex ? 'opacity-100' : 'opacity-0'
               }`}
+              onClick={handleBackgroundImageClick}
             >
               <img
                 src={image}
@@ -128,7 +134,7 @@ const Index = () => {
               />
             </div>
           ))}
-          <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+          <div className="absolute inset-0 bg-black bg-opacity-30 cursor-pointer" onClick={handleBackgroundImageClick}></div>
         </div>
 
         {/* Navigation Arrows */}
