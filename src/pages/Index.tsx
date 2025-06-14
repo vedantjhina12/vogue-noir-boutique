@@ -368,7 +368,7 @@ const Index = () => {
             </div>
             <div>
               <h4 className="font-semibold mb-4">CONNECT</h4>
-              <div className="flex space-x-4">
+              <div className="flex flex-col space-y-4">
                 <a href="#" className="text-gray-400 hover:text-white transition-colors" title="Instagram">
                   <Instagram className="h-6 w-6" />
                 </a>
