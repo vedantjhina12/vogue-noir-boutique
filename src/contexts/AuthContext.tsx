@@ -128,10 +128,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const verifyOtp = async (phone: string, token: string, type: 'sms' | 'signup') => {
+    // For phone verification, always use 'sms' as the type regardless of signup or login
     const { error } = await supabase.auth.verifyOtp({
       phone,
       token,
-      type
+      type: 'sms'
     });
     return { error };
   };
