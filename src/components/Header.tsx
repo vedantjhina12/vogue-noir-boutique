@@ -68,7 +68,7 @@ const Header = ({
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center">
             <img
-              src="/lovable-uploads/a4c758d0-4a47-4305-b821-3aa32e1fa77a.png"
+              src="/lovable-uploads/770ee32d-5872-4e30-8cea-10c9236ebf2f.png"
               alt="YUTH Lifestyle"
               className="h-12 w-auto"
             />
